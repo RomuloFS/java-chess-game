@@ -8,7 +8,6 @@ public class Rook extends ChessPiece{
 
 	public Rook(Board board, Color color) {
 		super(board, color);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
