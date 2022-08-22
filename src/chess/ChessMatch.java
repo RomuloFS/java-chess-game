@@ -1,5 +1,6 @@
 package chess;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,13 +25,17 @@ public class ChessMatch {
 	private boolean check;
 	private boolean checkMate;
 	private ChessPiece enPassantVulnerable;
-	
+	private ChessPiece promoted;
 	
 	public ChessMatch() {
 		board = new Board(8,8);
 		turn = 1;
 		currentPlayer = Color.WHITE;
 		initialSetup();
+	}
+	
+	public ChessPiece getPromoted() {
+		return promoted;
 	}
 	
 	public ChessPiece getEnPassantVulnerable() {
@@ -131,6 +136,18 @@ public class ChessMatch {
 		
 		ChessPiece movedPiece = (ChessPiece)board.piece(target);
 		
+		// specialmove promotion
+		promoted = null;
+		if (movedPiece instanceof Pawn) {
+			if ((movedPiece.getColor() == Color.WHITE && target.getRow() == 0)
+					|| (movedPiece.getColor() == Color.BLACK && target.getRow() == 7)) {
+				promoted = (ChessPiece)board.piece(target);
+				promoted = replacePromotedPiece("Q");
+				
+				
+			}
+		}
+		
 		check = (testCheck(opponent(currentPlayer)));
 		
 		if (testCheckMate(opponent(currentPlayer))) {
@@ -149,6 +166,36 @@ public class ChessMatch {
 		}
 		
 		return (ChessPiece)capturedPiece;
+	}
+	
+	public ChessPiece replacePromotedPiece(String piece) {
+		if (promoted == null) {
+			throw new IllegalStateException("Nenhum peão se encontra nas casas de promoção");
+		}
+		if (!piece.equals("B") &&
+				!piece.equals("N") &&
+				!piece.equals("R") &&
+				!piece.equals("Q")) {
+			throw new InvalidParameterException("Peça inválida para promoção");
+		}
+		
+		Position pos = promoted.getChessPosition().toPosition();
+		Piece p = board.removePiece(pos);
+		piecesOnTheBoard.remove(p);
+		
+		ChessPiece newPiece = newPiece(piece, promoted.getColor());
+		board.placePiece(newPiece, pos);
+		piecesOnTheBoard.add(newPiece);
+		
+		return newPiece;
+	}
+	
+	private ChessPiece newPiece(String piece, Color color) {
+		
+		if (piece.equals("B")) return new Bishop(board, color);
+		if (piece.equals("N")) return new Knight(board, color);
+		if (piece.equals("Q")) return new Queen(board, color);
+		return new Rook(board, color);
 	}
 	
 	private Piece makeMove(Position source, Position target) {
