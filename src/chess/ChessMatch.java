@@ -1,6 +1,5 @@
 package chess;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -176,7 +175,7 @@ public class ChessMatch {
 				!piece.equals("N") &&
 				!piece.equals("R") &&
 				!piece.equals("Q")) {
-			throw new InvalidParameterException("Peça inválida para promoção");
+			return promoted;
 		}
 		
 		Position pos = promoted.getChessPosition().toPosition();

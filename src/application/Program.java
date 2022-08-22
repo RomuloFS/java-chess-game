@@ -42,7 +42,15 @@ public class Program {
 				
 				if (match.getPromoted() != null) {
 					System.out.print("Insira uma peça para promover (B/N/R/Q): ");
-					String piece = sc.nextLine();
+					String piece = sc.nextLine().toUpperCase();
+					
+					while (!piece.equals("B") &&
+							!piece.equals("N") &&
+							!piece.equals("R") &&
+							!piece.equals("Q")) {
+						System.out.print("VALOR INVALIDO, insira uma peça para promover (B/N/R/Q): ");
+						piece = sc.nextLine().toUpperCase();
+					}
 					match.replacePromotedPiece(piece);
 				}
 				
